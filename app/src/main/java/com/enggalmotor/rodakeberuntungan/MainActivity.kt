@@ -740,15 +740,15 @@ fun RodaKeberuntunganScreen() {
                         fontWeight = FontWeight.ExtraBold,
                         textAlign = TextAlign.Center
                     )
-                    Spacer(modifier = Modifier.height(4.dp))
+                    Spacer(modifier = Modifier.height(8.dp))
                     Text(
-                        text = stringResource(id = R.string.winner_title),
-                        color = palette.accent,
-                        fontSize = 22.sp,
-                        fontWeight = FontWeight.ExtraBold,
+                        text = stringResource(id = R.string.you_won),
+                        color = Color.White,
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold,
                         textAlign = TextAlign.Center
                     )
-                    Spacer(modifier = Modifier.height(12.dp))
+                    Spacer(modifier = Modifier.height(8.dp))
                     Text(
                         text = winner!!,
                         color = Color.White,
@@ -756,6 +756,13 @@ fun RodaKeberuntunganScreen() {
                         fontWeight = FontWeight.ExtraBold,
                         textAlign = TextAlign.Center,
                         modifier = Modifier.alpha(winnerAlpha)
+                    )
+                    Spacer(modifier = Modifier.height(12.dp))
+                    Text(
+                        text = stringResource(id = R.string.thanks_oil),
+                        color = Color.White.copy(alpha = 0.8f),
+                        fontSize = 14.sp,
+                        textAlign = TextAlign.Center
                     )
                     Spacer(modifier = Modifier.height(20.dp))
                     Row {
