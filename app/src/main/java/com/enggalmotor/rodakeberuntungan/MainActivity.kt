@@ -741,6 +741,14 @@ fun RodaKeberuntunganScreen() {
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
+                        text = stringResource(id = R.string.congrats),
+                        color = palette.accent,
+                        fontSize = 30.sp,
+                        fontWeight = FontWeight.ExtraBold,
+                        textAlign = TextAlign.Center
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
                         text = stringResource(id = R.string.winner_title),
                         color = palette.accent,
                         fontSize = 22.sp,
