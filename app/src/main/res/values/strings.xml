@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Roda Keberuntungan Enggal Motor</string>
+    <string name="title">RODA KEBERUNTUNGAN</string>
+    <string name="subtitle">PEMBELIAN OLI FEDERAL GRATIS HADIAH!</string>
+    <string name="spin">PUTAR</string>
+    <string name="manage_names">Atur Daftar Nama</string>
+    <string name="names_count">Jumlah nama: %1$d</string>
+    <string name="add_name_hint">Nama baru…</string>
+    <string name="add">Tambah</string>
+    <string name="clear_all">Hapus Semua</string>
+    <string name="winner_title">PEMENANG!</string>
+    <string name="spin_again">Putar Lagi</string>
+    <string name="close">Tutup</string>
+    <string name="need_two_names">Isi minimal 2 nama dulu lewat tombol pensil di pojok kanan bawah.</string>
+</resources>
