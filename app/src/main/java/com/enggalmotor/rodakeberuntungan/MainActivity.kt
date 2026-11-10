@@ -296,16 +296,9 @@ fun RodaKeberuntunganScreen() {
             isSpinning = false
             winner = prizes[winnerIndex]
             showWinner = true
-            // Win jingle: 3 short beeps + 1 long beep, plus vibration.
+            // Only vibration when the winner pops up — no more beeps,
+            // so the tick-tick sound stops the moment the popup appears.
             vibrateWin(context)
-            try {
-                repeat(3) {
-                    toneGen?.startTone(ToneGenerator.TONE_PROP_BEEP, 150)
-                    kotlinx.coroutines.delay(200)
-                }
-                toneGen?.startTone(ToneGenerator.TONE_PROP_BEEP, 500)
-            } catch (_: Exception) {
-            }
         }
     }
 
