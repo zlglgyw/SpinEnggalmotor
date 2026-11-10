@@ -1,0 +1,39 @@
+name: Build APK
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+      # Logo disimpan sebagai base64 text di repo (6 file part), gabung
+      # lalu kembalikan ke PNG sebelum build, lalu hapus file part-nya
+      # supaya tidak ikut jadi resource Android.
+      - name: Restore logo PNG
+        run: |
+          cat app/src/main/res/drawable/logo_enggal_motor.png.b64.part* > app/src/main/res/drawable/logo_enggal_motor.png.b64
+          base64 -d app/src/main/res/drawable/logo_enggal_motor.png.b64 > app/src/main/res/drawable/logo_enggal_motor.png
+          rm app/src/main/res/drawable/logo_enggal_motor.png.b64*
+          # Ikon launcher PNG (fallback untuk API < 26) dibuat dari logo yang sama.
+          for d in mdpi hdpi xhdpi xxhdpi xxxhdpi; do
+            mkdir -p "app/src/main/res/mipmap-$d"
+            cp app/src/main/res/drawable/logo_enggal_motor.png "app/src/main/res/mipmap-$d/ic_launcher.png"
+            cp app/src/main/res/drawable/logo_enggal_motor.png "app/src/main/res/mipmap-$d/ic_launcher_round.png"
+          done
+          ls -l app/src/main/res/drawable/logo_enggal_motor.png
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.7"
+      - run: gradle assembleDebug --no-daemon
+      - uses: actions/upload-artifact@v4
+        with:
+          name: apk
+          path: app/build/outputs/apk/debug/*.apk
