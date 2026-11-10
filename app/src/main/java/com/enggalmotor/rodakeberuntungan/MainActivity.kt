@@ -102,13 +102,11 @@ import kotlin.math.sin
 import kotlin.random.Random
 
 private const val PREFS_NAME = "roda_keberuntungan"
-private const val KEY_NAMES = "names"
 private const val KEY_PRIZES = "prizes"
 private const val KEY_PIN = "pin"
 private const val KEY_LOCK = "lock_enabled"
 private const val KEY_THEME = "theme"
 private const val DEFAULT_PIN = "1234"
-private val DEFAULT_NAMES = listOf("Budi", "Andi", "Sari", "Joko", "Dewi", "Rina")
 private val DEFAULT_PRIZES =
     listOf("Oli Federal 1 Liter", "Kaos Enggal Motor", "Gelas", "Gantungan Kunci")
 
@@ -141,19 +139,6 @@ private val THEMES = listOf(
         Color(0xFFFFD166), Color(0xFF7C3AED), Color(0xFFA78BFA), Color(0xFF8E44AD)
     )
 )
-
-private fun loadNames(context: Context): List<String> {
-    val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-    val stored = prefs.getString(KEY_NAMES, null) ?: return DEFAULT_NAMES
-    return stored.split("\n").filter { it.isNotBlank() }
-}
-
-private fun saveNames(context: Context, names: List<String>) {
-    context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-        .edit()
-        .putString(KEY_NAMES, names.joinToString("\n"))
-        .apply()
-}
 
 private fun loadPrizes(context: Context): List<String> {
     val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
@@ -242,7 +227,6 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun RodaKeberuntunganScreen() {
     val context = LocalContext.current
-    var names by remember { mutableStateOf(loadNames(context)) }
     var prizes by remember { mutableStateOf(loadPrizes(context)) }
     var themeIndex by remember { mutableStateOf(loadTheme(context)) }
     val palette = THEMES[themeIndex.coerceIn(THEMES.indices)]
@@ -250,13 +234,11 @@ fun RodaKeberuntunganScreen() {
     var pin by remember { mutableStateOf(loadPin(context)) }
     var isSpinning by remember { mutableStateOf(false) }
     var winner by remember { mutableStateOf<String?>(null) }
-    var winnerPrize by remember { mutableStateOf<String?>(null) }
     var showWinner by remember { mutableStateOf(false) }
     var showSheet by remember { mutableStateOf(false) }
     var showPinDialog by remember { mutableStateOf(false) }
     var pinInput by remember { mutableStateOf("") }
     var pinError by remember { mutableStateOf("") }
-    var newName by remember { mutableStateOf("") }
     var newPrize by remember { mutableStateOf("") }
     var newPin by remember { mutableStateOf("") }
     var pinMsg by remember { mutableStateOf("") }
@@ -288,20 +270,19 @@ fun RodaKeberuntunganScreen() {
     }
 
     // Persist every change locally (SharedPreferences) — fully offline.
-    LaunchedEffect(names) { saveNames(context, names) }
     LaunchedEffect(prizes) { savePrizes(context, prizes) }
     LaunchedEffect(themeIndex) { saveTheme(context, themeIndex) }
     LaunchedEffect(lockEnabled) { saveLock(context, lockEnabled) }
 
     fun spin() {
         if (isSpinning) return
-        if (names.size < 2) {
-            message = context.getString(R.string.need_two_names)
+        if (prizes.size < 2) {
+            message = context.getString(R.string.need_two_items)
             return
         }
         message = ""
-        val winnerIndex = Random.nextInt(names.size)
-        val segmentAngle = 360f / names.size
+        val winnerIndex = Random.nextInt(prizes.size)
+        val segmentAngle = 360f / prizes.size
         val centerAngle = winnerIndex * segmentAngle + segmentAngle / 2f
         val currentMod = ((rotation.value % 360f) + 360f) % 360f
         // Pointer is at the top (270 degrees in canvas coordinates).
@@ -315,12 +296,7 @@ fun RodaKeberuntunganScreen() {
                 animationSpec = tween(durationMillis = 6000, easing = FastOutSlowInEasing)
             )
             isSpinning = false
-            winner = names[winnerIndex]
-            winnerPrize = if (prizes.isNotEmpty()) {
-                prizes[Random.nextInt(prizes.size)]
-            } else {
-                null
-            }
+            winner = prizes[winnerIndex]
             showWinner = true
             // Win jingle: 3 short beeps + 1 long beep, plus vibration.
             vibrateWin(context)
@@ -406,7 +382,7 @@ fun RodaKeberuntunganScreen() {
                 Spacer(modifier = Modifier.height(20.dp))
 
                 Wheel(
-                    names = names,
+                    names = prizes,
                     rotationDegrees = rotation.value,
                     modifier = Modifier.size(320.dp)
                 )
@@ -459,7 +435,7 @@ fun RodaKeberuntunganScreen() {
                 }
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = stringResource(id = R.string.names_count, names.size),
+                    text = stringResource(id = R.string.prizes_count, prizes.size),
                     color = Color.White.copy(alpha = 0.8f),
                     fontSize = 14.sp
                 )
@@ -511,6 +487,29 @@ fun RodaKeberuntunganScreen() {
                             maxLines = 1
                         )
                     }
+                    // Soft fade at both edges so the text never looks cut off.
+                    Box(
+                        modifier = Modifier
+                            .align(Alignment.CenterStart)
+                            .width(36.dp)
+                            .height(24.dp)
+                            .background(
+                                Brush.horizontalGradient(
+                                    colors = listOf(palette.mid, Color.Transparent)
+                                )
+                            )
+                    )
+                    Box(
+                        modifier = Modifier
+                            .align(Alignment.CenterEnd)
+                            .width(36.dp)
+                            .height(24.dp)
+                            .background(
+                                Brush.horizontalGradient(
+                                    colors = listOf(Color.Transparent, palette.mid)
+                                )
+                            )
+                    )
                 }
             }
         }
@@ -535,7 +534,7 @@ fun RodaKeberuntunganScreen() {
                     fontWeight = FontWeight.Bold
                 )
                 Text(
-                    text = stringResource(id = R.string.names_count, names.size),
+                    text = stringResource(id = R.string.prizes_count, prizes.size),
                     color = palette.accent,
                     fontSize = 14.sp
                 )
@@ -545,18 +544,18 @@ fun RodaKeberuntunganScreen() {
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     TextField(
-                        value = newName,
-                        onValueChange = { newName = it },
-                        placeholder = { Text(text = stringResource(id = R.string.add_name_hint)) },
+                        value = newPrize,
+                        onValueChange = { newPrize = it },
+                        placeholder = { Text(text = stringResource(id = R.string.add_item_hint)) },
                         singleLine = true,
                         modifier = Modifier.weight(1f)
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Button(onClick = {
-                        val trimmed = newName.trim()
+                        val trimmed = newPrize.trim()
                         if (trimmed.isNotEmpty()) {
-                            names = names + trimmed
-                            newName = ""
+                            prizes = prizes + trimmed
+                            newPrize = ""
                         }
                     }) {
                         Text(text = stringResource(id = R.string.add))
@@ -568,19 +567,19 @@ fun RodaKeberuntunganScreen() {
                         .fillMaxWidth()
                         .height(240.dp)
                 ) {
-                    itemsIndexed(names) { index, name ->
+                    itemsIndexed(prizes) { index, prize ->
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text(
-                                text = name,
+                                text = prize,
                                 color = Color.White,
                                 fontSize = 16.sp,
                                 modifier = Modifier.weight(1f)
                             )
                             TextButton(onClick = {
-                                names = names.toMutableList().also { it.removeAt(index) }
+                                prizes = prizes.toMutableList().also { it.removeAt(index) }
                             }) {
                                 Text(text = "Hapus", color = Red)
                             }
@@ -588,8 +587,8 @@ fun RodaKeberuntunganScreen() {
                     }
                 }
                 OutlinedButton(
-                    onClick = { names = emptyList() },
-                    enabled = names.isNotEmpty(),
+                    onClick = { prizes = emptyList() },
+                    enabled = prizes.isNotEmpty(),
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text(text = stringResource(id = R.string.clear_all))
@@ -636,78 +635,6 @@ fun RodaKeberuntunganScreen() {
                             )
                         }
                     }
-                }
-
-                Spacer(modifier = Modifier.height(20.dp))
-                // --- Prize list (drawn at random for the winner) ---
-                Text(
-                    text = stringResource(id = R.string.prizes_title),
-                    color = Color.White,
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold
-                )
-                Text(
-                    text = stringResource(id = R.string.prizes_count, prizes.size),
-                    color = palette.accent,
-                    fontSize = 14.sp
-                )
-                Spacer(modifier = Modifier.height(12.dp))
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    TextField(
-                        value = newPrize,
-                        onValueChange = { newPrize = it },
-                        placeholder = {
-                            Text(text = stringResource(id = R.string.add_prize_hint))
-                        },
-                        singleLine = true,
-                        modifier = Modifier.weight(1f)
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Button(onClick = {
-                        val trimmed = newPrize.trim()
-                        if (trimmed.isNotEmpty()) {
-                            prizes = prizes + trimmed
-                            newPrize = ""
-                        }
-                    }) {
-                        Text(text = stringResource(id = R.string.add))
-                    }
-                }
-                Spacer(modifier = Modifier.height(8.dp))
-                LazyColumn(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(160.dp)
-                ) {
-                    itemsIndexed(prizes) { index, prize ->
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(
-                                text = prize,
-                                color = Color.White,
-                                fontSize = 16.sp,
-                                modifier = Modifier.weight(1f)
-                            )
-                            TextButton(onClick = {
-                                prizes = prizes.toMutableList()
-                                    .also { it.removeAt(index) }
-                            }) {
-                                Text(text = "Hapus", color = Red)
-                            }
-                        }
-                    }
-                }
-                OutlinedButton(
-                    onClick = { prizes = emptyList() },
-                    enabled = prizes.isNotEmpty(),
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text(text = stringResource(id = R.string.clear_all))
                 }
 
                 Spacer(modifier = Modifier.height(20.dp))
@@ -895,19 +822,6 @@ fun RodaKeberuntunganScreen() {
                         textAlign = TextAlign.Center,
                         modifier = Modifier.alpha(winnerAlpha)
                     )
-                    if (winnerPrize != null) {
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Text(
-                            text = stringResource(
-                                id = R.string.prize_label,
-                                winnerPrize!!
-                            ),
-                            color = palette.accent,
-                            fontSize = 20.sp,
-                            fontWeight = FontWeight.Bold,
-                            textAlign = TextAlign.Center
-                        )
-                    }
                     Spacer(modifier = Modifier.height(20.dp))
                     Row {
                         Button(onClick = {
