@@ -459,13 +459,13 @@ private fun Wheel(
                 }
                 val centerAngle = i * sweep + sweep / 2f
                 val textRadius = radius * 0.62f
-                drawIntoCanvas { canvas ->
-                    canvas.nativeCanvas.save()
-                    canvas.nativeCanvas.translate(center.x, center.y)
-                    canvas.nativeCanvas.rotate(centerAngle)
+                with(drawContext.canvas) {
+                    nativeCanvas.save()
+                    nativeCanvas.translate(center.x, center.y)
+                    nativeCanvas.rotate(centerAngle)
                     // drawText x is along the radius, y is the baseline offset.
-                    canvas.nativeCanvas.drawText(name, textRadius, paint.textSize / 3f, paint)
-                    canvas.nativeCanvas.restore()
+                    nativeCanvas.drawText(name, textRadius, paint.textSize / 3f, paint)
+                    nativeCanvas.restore()
                 }
             }
             // Gold border around the wheel.
