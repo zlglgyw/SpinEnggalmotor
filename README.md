@@ -35,8 +35,9 @@ Dibuat untuk Enggal Motor — tema promo "PEMBELIAN OLI FEDERAL GRATIS HADIAH!".
    dengan project ini).
 2. Buka tab **Actions** di repo. Setiap push ke `main` (atau jalankan manual
    lewat **Run workflow**) akan menjalankan workflow `.github/workflows/android.yml`:
-   checkout → setup Java 17 (Temurin) → kembalikan logo PNG dari file
-   `logo_enggal_motor.png.b64` (logo disimpan sebagai teks base64 di repo)
+   checkout → setup Java 17 (Temurin) → kembalikan logo PNG dari file-file
+   `logo_enggal_motor.png.b64.part1` sampai `part6` (logo disimpan sebagai
+   teks base64 di repo)
    → setup Gradle 8.7 → `gradle assembleDebug` → upload artifact bernama `apk`.
 3. Setelah build selesai (tanda hijau), buka hasil run tersebut, scroll ke
    **Artifacts**, download `apk` (file ZIP). Di dalamnya ada file `.apk`.
