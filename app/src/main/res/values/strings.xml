@@ -13,4 +13,20 @@
     <string name="spin_again">Putar Lagi</string>
     <string name="close">Tutup</string>
     <string name="need_two_names">Isi minimal 2 nama dulu lewat tombol pensil di pojok kanan bawah.</string>
+    <string name="marquee_text">BELI OLI FEDERAL GRATIS HADIAH!   •   ENGGAL MOTOR   •   </string>
+    <string name="theme_title">Tema Warna</string>
+    <string name="prizes_title">Daftar Hadiah</string>
+    <string name="prizes_count">Jumlah hadiah: %1$d</string>
+    <string name="add_prize_hint">Hadiah baru…</string>
+    <string name="prize_label">Hadiah: %1$s</string>
+    <string name="lock_settings">Kunci Pengaturan (PIN)</string>
+    <string name="enter_pin">Masukkan PIN</string>
+    <string name="pin_hint">PIN 4 digit</string>
+    <string name="new_pin_hint">PIN baru 4 digit</string>
+    <string name="change_pin">Ubah PIN</string>
+    <string name="pin_saved">PIN tersimpan.</string>
+    <string name="pin_four_digits">PIN harus 4 digit angka.</string>
+    <string name="wrong_pin">PIN salah, coba lagi.</string>
+    <string name="unlock">Buka</string>
+    <string name="cancel">Batal</string>
 </resources>
